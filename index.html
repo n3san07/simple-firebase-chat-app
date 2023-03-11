@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Chat App</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f2f2f2;
+      }
+      .container {
+        max-width: 600px;
+        margin: 70px auto;
+        padding: 20px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      }
+      h1 {
+        text-align: center;
+        color: #333;
+      }
+      #message-list {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        max-height: 300px;
+        overflow-y: scroll;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+      }
+      #message-list li {
+        margin-bottom: 10px;
+        padding: 10px;
+        background-color: #f2f2f2;
+        border-radius: 5px;
+      }
+      #message-input {
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        border: none;
+        border-radius: 5px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+      }
+      #send-button {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      #send-button:hover {
+        background-color: #3e8e41;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Chat App</h1>
+      <ul id="message-list"></ul>
+      <input type="text" id="message-input" placeholder="Type a message..." />
+      <button onclick="send()" id="send-button">Send</button>
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://www.gstatic.com/firebasejs/9.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.8.1/firebase-database-compat.js"></script>
+    <script>
+      // Initialize Firebase
+      var firebaseConfig = {
+        apiKey: "AIzaSyAD09U4j7JnqAVhz0j3XsEajybY3jh4ygk",
+        authDomain: "newd-dbd6e.firebaseapp.com",
+        databaseURL: "https://newd-dbd6e-default-rtdb.firebaseio.com",
+        projectId: "newd-dbd6e",
+        storageBucket: "newd-dbd6e.appspot.com",
+        messagingSenderId: "604283640566",
+        appId: "1:604283640566:web:9591eb3c096a0b6f262ad7",
+        measurementId: "G-0JRVKHLGD1",
+      };
+      firebase.initializeApp(firebaseConfig);
+
+      // Get a reference to the messages in the database
+      var messagesRef = firebase.database().ref("chatapp");
+
+      // Get a reference to the message input element
+      var messageInput = document.getElementById("message-input");
+
+      // Get a reference to the message list element
+      var messageList = document.getElementById("message-list");
+
+      // Get a reference to the send button element
+      var sendButton = document.getElementById("send-button");
+
+      const emojiPicker = document.getElementById("emoji-picker");
+
+      let user = prompt("what is your name");
+
+      // Listen for new messages and update the chat interface
+
+      messagesRef.on("child_added", function (snapshot) {
+        var message = snapshot.val();
+        var li = document.createElement("li");
+        li.innerHTML = `<strong>${message.name}:</strong> ${message.msg}`;
+        messageList.appendChild(li);
+        messageList.scrollTo(0, messageList.scrollHeight);
+      });
+
+      function send() {
+        if (user) {
+          var message = {
+            msg: messageInput.value,
+            name: user,
+            time: Date.now(),
+          };
+          messagesRef.push(message);
+          messageInput.value = "";
+        }
+      }
+      messageInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          send();
+        }
+      });
+    </script>
+  </body>
+</html>
